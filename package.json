@@ -1,0 +1,9 @@
+{
+	"name" : "teiparser",
+	"version" : "0.0.1",
+	"main": "./parser.js",
+	"dependencies": {
+		"cheerio-soupselect" : "https://github.com/Siedrix/cheerio/tarball/master",
+		"underscore" : "1.x"
+	}	
+}
