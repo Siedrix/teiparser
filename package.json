@@ -1,9 +1,13 @@
 {
 	"name" : "teiparser",
-	"version" : "0.0.1",
+	"version" : "0.0.2",
 	"main": "./parser.js",
+	"repository":   {
+		"type": "git",
+		"url" : "git://github.com/Siedrix/teiparser.git"
+	},	
 	"dependencies": {
-		"cheerio-soupselect" : "https://github.com/Siedrix/cheerio/tarball/master",
+		"cheerio" : "https://github.com/Siedrix/cheerio/tarball/master",
 		"underscore" : "1.x"
 	}	
 }
