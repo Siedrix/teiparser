@@ -1,5 +1,4 @@
 (function (global) {
-	console.log('Parsing it like its 2000');
 	if(typeof process !== 'undefined'){
 		var _       = require("underscore"),
 			cheerio = require("cheerio"),
@@ -73,8 +72,8 @@
 				return;
 			}
 
-			folio.pb   = $item.find('pb').text()
-			folio.raw  = $item.html();
+			folio.pb   = $item.find('pb').text();
+			folio.raw  = $item.find('p').html();
 			folio.hash = sha1($item.text().replace(/\W/g,'').toLowerCase());
 
 			folio.tags = $item.find(tags.join(',')).map(function(i,teiTag){
