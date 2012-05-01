@@ -73,7 +73,7 @@
 			}
 
 			folio.pb   = $item.find('pb').text();
-			folio.raw  = $item.find('p').html();
+			folio.raw  = $item.find('p').html().trim();
 			folio.hash = sha1($item.text().replace(/\W/g,'').toLowerCase());
 
 			folio.tags = $item.find(tags.join(',')).map(function(i,teiTag){
