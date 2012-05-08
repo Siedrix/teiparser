@@ -11,4 +11,13 @@ Parser.setStructure({
 
 var parser = new Parser(tei);
 
-console.log( util.inspect( parser.getFolios(), false, 4 ) );
+//console.log( util.inspect( parser.getFolios(), false, 4 ) );
+
+var folios = parser.getFolios();
+
+folios.forEach(function(folio){
+	if(folio){
+		console.log(folio.pb);
+		console.log(folio.lines, folio.startLine);
+	}
+})

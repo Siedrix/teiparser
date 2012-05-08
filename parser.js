@@ -62,7 +62,8 @@
 		var folios = {},
 			$tei = this.teiAsDom,
 			$folios = $tei.find('text div'),
-			tags = this.structure.tags;			
+			tags = this.structure.tags,
+			lineCounter = 0;			
 
 		folios = $folios.map(function(i,item){
 			var folio = {},
@@ -72,9 +73,11 @@
 				return;
 			}
 
-			folio.pb   = $item.find('pb').text();
-			folio.raw  = $item.find('p').html().trim();
-			folio.hash = sha1($item.text().replace(/\W/g,'').toLowerCase());
+			folio.pb    = $item.find('pb').text();
+			folio.raw   = $item.find('p').html().trim();
+			folio.lines = folio.raw.split('\n').length;
+			folio.startLine = lineCounter;
+			folio.hash  = sha1($item.text().replace(/\W/g,'').toLowerCase());
 
 			folio.tags = $item.find(tags.join(',')).map(function(i,teiTag){
 				var tag = {},
@@ -90,6 +93,7 @@
 			});
 
 			folio.tags = folio.tags.toArray ? folio.tags.toArray() : folio.tags;
+			lineCounter += folio.lines;
 
 			return folio;
 		});
