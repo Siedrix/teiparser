@@ -23,6 +23,27 @@
 		this.structure = structure;
 	}
 
+	Parser.prototype._hashFolio = function(tag){
+		var pb = tag.find('pb').text(),
+			id;
+
+		if(pb){
+			id = sha1( pb.replace(/\W/g,'').toLowerCase() );
+		}else{
+			id = sha1( tag.text().replace(/\W/g,'').toLowerCase() );
+		}
+
+		return id;
+	}
+
+	Parser.prototype._closest = function(el, tag){
+		while( el.parent() && el.parent()[0].name !== tag){
+			el = el.parent();
+		}
+
+		return el.parent();
+	}
+
 	Parser.prototype.getSchema = function(){
 		var $tei = this.teiAsDom;
 		var schema = $tei.find('schemaSpec').find('moduleRef').map(function(i, item) { return $(item).attr('key'); });//.toArray();
@@ -59,34 +80,39 @@
 	}
 
 	Parser.prototype.getFolios = function(){
-		var folios = {},
-			$tei = this.teiAsDom,
-			$folios = $tei.find('text div'),
-			tags = this.structure.tags,
-			lineCounter = 0;			
+		var folios      = {},
+			tempRaw     = this.raw,
+			$tei        = $(tempRaw),
+			$folios     = $tei.find('text div'),
+			tags        = this.structure.tags,
+			lineCounter = 0,
+			parser      = this;			
 
 		folios = $folios.map(function(i,item){
 			var folio = {},
 				$item = $(item);
 
 			if( $item.find('front').length ){
-				return;
+				folio.isFront = true;
 			}
 
 			folio.pb    = $item.find('pb').text();
-			folio.raw   = $item.find('p').html().trim();
+			folio.hash  = parser._hashFolio($item);
+			
+			$item.find('pb').remove();
+
+			folio.raw   = $item.html().trim();
 			folio.lines = folio.raw.split('\n').length;
 			folio.startLine = lineCounter;
-			folio.hash  = sha1($item.text().replace(/\W/g,'').toLowerCase());
 
 			folio.tags = $item.find(tags.join(',')).map(function(i,teiTag){
 				var tag = {},
 					$tag = $(teiTag);
 
 				tag.tag 	= teiTag.nodeName;
-				tag.content = $tag.text();
-				tag.reg     = $tag.attr('reg');
-				tag.type    = $tag.attr('type');
+				tag.content = $tag.text().trim();
+				$tag.attr('reg')  ? tag.reg  = $tag.attr('reg') : null;
+				$tag.attr('type') ? tag.type = $tag.attr('type') : null;
 				tag.id      = sha1( ( tag.type + (tag.reg || tag.content).replace(/\W/g,'') ).toLowerCase());
 
 				return tag
@@ -95,11 +121,33 @@
 			folio.tags = folio.tags.toArray ? folio.tags.toArray() : folio.tags;
 			lineCounter += folio.lines;
 
+
 			return folio;
 		});
 
 		return folios.toArray ? folios.toArray() : folios;
 	}
+
+	Parser.prototype.getHeads = function() {
+		var heads   = [],
+			tempRaw = this.raw,
+			$tei    = $(tempRaw),
+			parser  = this;
+
+					
+		$tei.find('head').map(function(i,headTag){
+			var head  = {},
+				$head = $(headTag),
+				folio = parser._closest( $head, 'div' );
+
+			head.content = $head.text().replace('\n',' ');
+			head.folio   = parser._hashFolio(folio);
+
+			heads.push(head);
+		});
+
+		return heads;
+	};
 
 	Parser.prototype.getTei = function(){
 		var tei = {};
@@ -107,6 +155,7 @@
 		tei.schema = this.getSchema();
 		tei.header = this.getHeader();
 		tei.front  = this.getFront();
+		tei.heads  = this.getHeads();
 		tei.folios = this.getFolios();
 
 		return tei;
