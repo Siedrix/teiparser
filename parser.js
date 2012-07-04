@@ -109,10 +109,10 @@
 				var tag = {},
 					$tag = $(teiTag);
 
-				tag.tag 	= teiTag.nodeName;
+				tag.tag 	= teiTag.nodeName.toLowerCase();
 				tag.content = $tag.text().trim();
 				$tag.attr('reg')  ? tag.reg  = $tag.attr('reg') : null;
-				$tag.attr('type') ? tag.type = $tag.attr('type') : null;
+				$tag.attr('type') ? tag.type = $tag.attr('type').toLowerCase() : null;
 				tag.id      = sha1( ( tag.type + (tag.reg || tag.content).replace(/\W/g,'') ).toLowerCase());
 
 				return tag

@@ -1,6 +1,6 @@
 {
 	"name" : "teiparser",
-	"version" : "0.0.5",
+	"version" : "0.0.7",
 	"main": "./parser.js",
 	"repository":   {
 		"type": "git",

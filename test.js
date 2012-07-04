@@ -12,15 +12,9 @@ Parser.setStructure({
 
 var parser = new Parser(tei);
 
-console.log( util.inspect( parser.getHeads()  , false, 1 ) );
 console.log( util.inspect( _.chain( parser.getFolios() )
  .map(function(item){
-	return {
-		id : item.hash,
-		pb : item.pb
-	}
-}).sortBy(function(item){
-	return item.id
-}).value() , false, 1 ) );
+	return item.tags
+}).value() , false, 2 ) );
 
 
