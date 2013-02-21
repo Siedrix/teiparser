@@ -19,6 +19,11 @@
 		this.structure = this.constructor.structure;
 	}
 
+	Parser.setAllowedTags = function (tags) {
+		this._checkForWarnings = true;
+		this._allowedTags = tags;
+	}
+
 	Parser.setStructure = function(structure){
 		this.structure = structure;
 	}
@@ -35,6 +40,21 @@
 
 		return id;
 	}
+
+	Parser.prototype._validateTag = function(tag) {
+		var allowedTags = this.constructor._allowedTags;
+		if(!allowedTags[tag.tag]){
+			return "Not allow tag";
+		}else{
+			if(!tag.type && allowedTags[tag.tag].indexOf('default') === -1){
+				return tag.tag + " cant have empty type";
+			}else if(tag.type && allowedTags[tag.tag].indexOf(tag.type) === -1){
+				return tag.type + " is not a supported type on " + tag.tag;
+			}else {
+				return null;
+			}
+		}
+	};
 
 	Parser.prototype._closest = function(el, tag){
 		while( el.parent() && el.parent()[0].name !== tag){
@@ -86,7 +106,11 @@
 			$folios     = $tei.find('text div'),
 			tags        = this.structure.tags,
 			lineCounter = 0,
-			parser      = this;			
+			parser      = this,
+			checkForWarnings = this.constructor._checkForWarnings;		
+			allowedTags = this.constructor._allowedTags;		
+
+		console.log('parser', parser.constructor._checkForWarnings);	
 
 		folios = $folios.map(function(i,item){
 			var folio = {},
@@ -114,6 +138,16 @@
 				$tag.attr('reg')  ? tag.reg  = $tag.attr('reg') : null;
 				$tag.attr('type') ? tag.type = $tag.attr('type').toLowerCase() : null;
 				tag.id      = sha1( ( tag.type + (tag.reg || tag.content).replace(/\W/g,'') ).toLowerCase());
+
+				// Check for warnings
+				if(checkForWarnings && allowedTags){
+					var warning = parser._validateTag(tag);
+
+					if(warning){
+						tag.warning = warning;
+						folio.hasWarnings = true;
+					}
+				}
 
 				return tag
 			});
