@@ -1,5 +1,5 @@
 {
-	"name" : "teiparser",
+	"name" : "tei-parser",
 	"version" : "0.1.1",
 	"main": "./parser.js",
 	"repository":   {
