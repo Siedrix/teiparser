@@ -173,6 +173,6 @@ function SHA1 (msg) {
  
 }
 
-if(typeof require !== 'undefined'){
-	exports.sha1 = SHA1;
+if (typeof define === "function" && define.amd) {
+  define("sha1", [], function () { return SHA1; });
 }
